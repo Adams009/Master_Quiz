@@ -19,6 +19,11 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        flash('Congratulations {}, you are now a registered user!'.format(user.username))
+        flash('Congratulations {}, you are now a registered user!'.format(user.username), 'success')
         return redirect(url_for('index'))
+    
+    else:
+        for error in form.errors.values():
+            if error:
+                flash(f"something went wrong: {error}",'danger')
     return render_template('register.html', title='Register', form=form)
