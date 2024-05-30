@@ -3,3 +3,5 @@ Flask-SQLAlchemy
 Flask-WTF
 email-validator
 werkzeug
+flask-login
+flask-migrate

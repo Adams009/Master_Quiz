@@ -21,15 +21,18 @@
             <li class="nav-item">
               <a class="nav-link active text-light" aria-current="page" href="{{ url_for('index')}}">QuizMaster</a>
             </li>
+            {% if current_user.is_anonymous %}
             <li class="nav-item ">
-              <a class="nav-link text-light" href="#">login</a>
+              <a class="nav-link text-light" href="{{ url_for('login')}}">login</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-light" href="{{ url_for('register')}}">register</a>
             </li>
+            {% else %}
             <li class="nav-item ">
-              <a class="nav-link text-light" href="#">logout</a>
+              <a class="nav-link text-light" href="{{ url_for ('logout')}}">logout</a>
             </li>
+            {% endif %}
           </ul>
         </div>
     </div>
