@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+<div class="question_answered container border p-3 text-dark mt-5" style="background-color: #F0F0F0;">
+   {% block content %}
+   <h1>Quiz Time!</h1>
+   <form method="POST">
+      {% for idx, question in enumerate(questions) %}
+      <div class="question-container border-bottom py-3">
+         <p class="question-number">{{ idx+1 }}</p>
+         <br>
+         <p class="question-text">{{ question.Question }}</p>
+         {% for choice in question.choices %}
+         <input type="radio" id="{{ choice }}" name="{{ idx }}" value="{{ choice }}" required>
+         <label for="{{ choice }}">{{ choice }}</label><br>
+         {% endfor %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary" type="submit">Submit Answers</button>
+   </form>
+   {% endblock %}
+</div>
