@@ -1,0 +1,14 @@
+.Register1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 70%;
+}
+
+.regh1 {
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #000000;
+    margin-top: 30px;
+}

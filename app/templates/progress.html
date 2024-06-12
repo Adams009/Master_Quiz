@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>User Progress</h2>
+  <p>Total Questions Answered: {{ total_answers_count }}</p>
+  <p>Correct Answers: {{ correct_answers_count }}</p>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Answered Correctly</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for progress in user_progress %}
+        <tr>
+          <td>{{ progress.question.question_text }}</td>
+          <td>{{ 'Yes' if progress.is_correct else 'No' }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

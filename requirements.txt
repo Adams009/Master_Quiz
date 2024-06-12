@@ -1,7 +1,8 @@
-Flask
-Flask-SQLAlchemy
-Flask-WTF
-email-validator
-werkzeug
-flask-login
-flask-migrate
+Flask             # Flask is a lightweight WSGI web application framework in Python. It's designed to make getting started quick and easy, with the ability to scale up to complex applications.
+Flask-SQLAlchemy  # Flask-SQLAlchemy provides a SQLAlchemy support for Flask applications, making it easier to use SQLAlchemy ORM with Flask.
+Flask-WTF         # Flask-WTF integrates Flask with WTForms, a form validation and rendering library, making it easier to work with web forms.
+email-validator   # email-validator is a library for checking if an email address is valid, properly formatted, and exists.
+werkzeug          # Werkzeug is a comprehensive WSGI web application library. It's used by Flask as one of its dependencies and provides utilities for request/response handling and more.
+flask-login       # Flask-Login provides user session management for Flask. It handles the common tasks of logging in, logging out, and remembering user sessions.
+flask-migrate     # Flask-Migrate is an extension that handles SQLAlchemy database migrations for Flask applications using Alembic.
+requests          # Requests is a simple and elegant HTTP library for Python, allowing you to send HTTP/1.1 requests easily.

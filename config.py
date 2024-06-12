@@ -1,5 +1,6 @@
 import secrets
 
+# Configuration class definition, which includes all the configuration variables for the application
 class Config:
     SECRET_KEY = secrets.token_hex(32)  # This is need for session security(secure session)
     SQLALCHEMY_DATABASE_URI = 'sqlite:///quiz_master.db'  # SQLite database URI

@@ -4,32 +4,59 @@ from app import app, db
 from app.forms import RegistrationForm, LoginForm
 from app.models import User
 import random, requests, html
+from app.models import Category, Question, UserProgress
+from urllib.parse import urlsplit
 
 
-
-
-
-
+# Function to get questions from the Open Trivia Database API
 def get_pool(amt,cat):
     url = f'https://opentdb.com/api.php?amount={amt}&category={cat}'
     response = requests.get(url).json()
     return response
 
+# Function to shuffle a list of multiple choice answers
 def shuffled(multiple):
     random.shuffle(multiple)
     return multiple
 
-
+# Add enumerate function to Jinja2 context processors
 @app.context_processor
 def enumerate_fun():
     return dict(enumerate=enumerate)
 
 
-
+# Route to display all categories, requires login
 @app.route('/categories')
+@login_required
 def categories():
-    return 'Browse Categories'
+    categories = Category.query.all()
+    return render_template('categories.html', title='Categories', categories=categories)
 
+# Route to display a specific category and its questions, requires login
+@app.route('/category/<int:category_id>')
+@login_required
+def category(category_id):
+    category = Category.query.get_or_404(category_id)
+    questions = Question.query.filter_by(category_id=category_id).all()
+    return render_template('category.html', title=category.name, category=category, questions=questions)
+
+# Route to display and handle the question answering logic, requires login
+@app.route('/question/<int:question_id>', methods=['GET', 'POST'])
+@login_required
+def question(question_id):
+    question = Question.query.get_or_404(question_id)
+    if request.method == 'POST':
+        user_answer = request.form.get('answer')
+        correct = user_answer == question.correct_answer
+        user_progress = UserProgress(user_id=current_user.id, question_id=question.id, is_answered=True, is_correct=correct)
+        db.session.add(user_progress)
+        db.session.commit()
+        flash('Correct!' if correct else 'Wrong!', 'success' if correct else 'danger')
+        return redirect(url_for('categories'))
+    wrong_answers = question.wrong_answers.split(',')
+    return render_template('question.html', title='Question', question=question, wrong_answers=wrong_answers)
+
+# Route to handle user registration
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -48,6 +75,7 @@ def register():
     return render_template('register.html', title='Register', form=form)
 
 
+# Route to handle user login
 @app.route('/login/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -60,19 +88,33 @@ def login():
             return redirect(url_for('login'))
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
-        if not next_page or urlsplit(next_page)[0]!= '':
+        if not next_page or urlsplit(next_page).netloc != '':
             next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
+
+# Route to handle user logout, requires login
 @app.route('/logout')
+@login_required
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+# Route to display user progress, requires login
+@app.route('/progress')
+@login_required
+def progress():
+    user_progress = UserProgress.get_user_progress(current_user.id)
+    correct_answers_count = UserProgress.get_correct_answers_count(current_user.id)
+    total_answers_count = UserProgress.get_total_answers_count(current_user.id)
+    return render_template('progress.html', title='Progress', user_progress=user_progress, correct_answers_count=correct_answers_count, total_answers_count=total_answers_count)
 
+
+# Route for the home page, which handles category selection and question amount input
 @app.route('/',methods=['GET','POST'])
 @app.route('/index/', methods=['GET','POST'])
+@login_required
 def index():
     if request.method == 'POST':
         cat = 10
@@ -98,6 +140,7 @@ def index():
     return  render_template('index.html')
 
 
+# Route to handle the quiz logic, fetching questions and evaluating answers
 @app.route('/quiz/<int:cat>/<int:amount>', methods=['GET','POST'])
 def quiz(cat,amount):
     All_answer = request.form
@@ -138,7 +181,7 @@ def quiz(cat,amount):
         return "No trivia data found. Please try again later."
 
 
-
+# Route to display quiz results
 @app.route('/result/<int:amount>/<int:score>', methods=['GET','POST'])
 def result(amount,score):
     divide = amount/2
